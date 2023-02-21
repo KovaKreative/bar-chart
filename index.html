@@ -4,20 +4,57 @@
     <head>
       <title>Kova Bar Chart</title>
       <link rel="stylesheet" href="style.css">
+      <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+      <script src="script.js"></script>
     </head>
     <body>
 
       <h2>Bar Chart</h2>
       <main>
         <!--This is where the bar chart will be-->
-
+        <div id="bar-chart-mockup" class="bar-container">
+          <div class="bar"><p class="bar-label bar-label-top">100</p></div>
+          <div class="bar"><p class="bar-label bar-label-middle">70</p></div>
+          <div class="bar"><p class="bar-label bar-label-bottom">20</p></div>
+          <div class="bar"><p class="bar-label">90</p></div>
+          <div class="bar"><p class="bar-label">90</p></div>
+          <div class="bar"><p class="bar-label">45</p></div>
+        </div>
       </main>
-      <form>
+      <form style="margin-top: 20px">
         <!--This is where all the settings for the bar chart will be located-->
+        <label>Number of graph elements:</label>
+
+        <button></button>
+        <p></p>
+        <button></button>
+
+        <label>Graph colour:</label>
+        <select id="colour-picker">
+          <option class="bar-colour" value="salmon">Red</option>
+          <option class="bar-colour" value="mediumseagreen">Green</option>
+          <option class="bar-colour" value="cornflowerblue">Blue</option>
+          <option class="bar-colour" value="goldenrod">Yellow</option>
+        </select>
+
       </form>
       <footer class="footer">
         Created by Eric (Valeriy) Kovalevskyy in February of 2023 for Lighthouse Labs Prep Module.
       </footer>
-      <script src="script.js"></script>
+
+      <script type="text/javascript">
+        $(".bar").click(function(){
+          $(this).children().html(function(){
+            return Math.round(Math.random() * 100);
+          });
+        });
+
+        //Change colour of bars
+        $("select").change(function(){
+          let clr = $("select option:selected").val();
+          $(".bar").css("background-color", clr);
+        });
+
+      </script>
     </body>
 </html>
