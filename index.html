@@ -12,7 +12,7 @@
       <h2>Bar Chart</h2>
       <main>
         <!--This is where the bar chart will be-->
-        <div id="bar-chart-mockup" class="bar-container">
+        <div id="bar-container">
           <div class="bar"><p class="bar-label bar-label-top">100</p></div>
           <div class="bar"><p class="bar-label bar-label-middle">70</p></div>
           <div class="bar"><p class="bar-label bar-label-bottom">20</p></div>
@@ -50,23 +50,37 @@
 
         let barSettings = {
           labelPosition: valuePositions[0],
-          barColour: "red",
-          labelColour: "white",
+          barColour: "salmon",
+          labelColour: "black",
           fontColour: "white",
           fontSize: 13,
-          spacing: "5px",
+          spacing: "100px",
           axisLabelX: "X Axis",
           axisLabelY: "Y Axis",
           scaleData: false, //Whether the data should be shown from 0, or from the lowest point
         }
 
-        const barElement = Document.getElementById("#bar-container");
+        const barElement = document.getElementById("bar-container");
 
         function drawBarChart(data, options, element){
-          $(".bar").css("background-color", barSettings.barColour);
+
+
+
+          let output = "";
+
+          for(let i = 0; i < numOfElements; i++){
+            output += `<div class="bar"><p class="bar-label ${options.labelPosition}">${data[i]}</p></div>`;
+          }
+          element.innerHTML = output;
+
+          $(".bar").css("background-color", options.barColour);
+          $(".bar").css("margin-left", options.spacing);
+          $(".bar").css("margin-right", options.spacing);
+          $(".bar-label").css("color", options.labelColour);
         }
 
         drawBarChart(barChartData, barSettings, barElement);
+
 
 
         $(".bar").click(function(){
@@ -81,7 +95,7 @@
 
           if(!isNaN(val)){
 
-
+            numOfElements = val;
 
           }
         });

@@ -1,3 +1,14 @@
+//Prevent form from submitting when user pushes enter upon filling in an input field
+
+$(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+});
+
 
 //Bar Chart Customization Functions
 
