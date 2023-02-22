@@ -19,7 +19,7 @@
           <div class="bar"><p class="bar-label">90</p></div>
           <div class="bar"><p class="bar-label">90</p></div>
           <div class="bar"><p class="bar-label">45</p></div>
-        </div>
+      </div>
       </main>
       <form style="margin-top: 20px">
         <!--This is where all the settings for the bar chart will be located-->
@@ -42,19 +42,19 @@
       <script type="text/javascript">
 
         let numOfElements = 3;
-        let barChartData = [0, 50, 100];
+        let barChartData = ["33", "50", "100", "88", "69", "39"];
 
         const valuePositions = ["bar-label-bottom", "bar-label-middle", "bar-label-top"];
 
         let labelColour = "white";
 
         let barSettings = {
-          labelPosition: valuePositions[0],
+          labelPosition: valuePositions[2],
           barColour: "salmon",
           labelColour: "black",
           fontColour: "white",
           fontSize: 13,
-          spacing: "100px",
+          spacing: "10px",
           axisLabelX: "X Axis",
           axisLabelY: "Y Axis",
           scaleData: false, //Whether the data should be shown from 0, or from the lowest point
@@ -64,12 +64,33 @@
 
         function drawBarChart(data, options, element){
 
+          let lowestDataNum = data[0];
+          let highestDataNum = data[0];
 
+          for(let i = 0; i < data.length; i++){ //go through data to determine range
+            let entry = parseFloat(data[i]);
+            if(isNaN(entry)){
+              data[i] = "Invalid Data";
+              lowestDataNum = 0;
+              highestDataNum = 0;
+            } else {
+              if(entry < lowestDataNum){
+                lowestDataNum = data[i];
+              }
+              if(entry > highestDataNum){
+                highestDataNum = data[i];
+              }
+            }
+          }
 
-          let output = "";
+          let output = `<h3 id="y-axis-label">Label Text Here</h3>`;
+          output += `<div id="data-scale"><hr><hr><hr></div>`;
 
-          for(let i = 0; i < numOfElements; i++){
-            output += `<div class="bar"><p class="bar-label ${options.labelPosition}">${data[i]}</p></div>`;
+          for(const entry of data){
+
+            const dataPercentage = Math.round(entry / highestDataNum * 95);
+
+            output += `<div class="bar" style="height: ${dataPercentage}%"><p class="bar-label ${options.labelPosition}">${entry}</p></div>`;
           }
           element.innerHTML = output;
 

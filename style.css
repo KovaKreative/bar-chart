@@ -6,6 +6,17 @@ h2 {
   color: lightgoldenrodyellow;
 }
 
+h3 {
+  margin: 5px;
+}
+
+hr {
+  width: 100%;
+  height: 0px;
+  margin: auto;
+  position: relative;
+}
+
 #bar-container {
   display: flex;
   width: 90%;
@@ -17,17 +28,33 @@ h2 {
   background-color: lightslategray;
 }
 
+#y-axis-label {
+  writing-mode: sideways-lr;
+  text-orientation:sideways;
+  text-align: center;
+}
+
+#data-scale {
+  display: flex;
+  border-left: 2px solid;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-color: black;
+  min-width: 10px;
+  padding: 0px;
+}
+
 .bar {
   outline-width: 3px;
   outline-style: outset;
   outline-color: black;
-  height: 60%;
   flex: 1;
   margin: 10px;
   margin-bottom: 5px;
   margin-top: auto;
   border-radius: 10px 10px 0 0;
   position: relative;
+
 }
 
 .bar-label {
