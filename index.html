@@ -5,7 +5,7 @@
       <title>Kova Bar Chart</title>
       <link rel="stylesheet" href="style.css">
       <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-      <script src="script.js"></script>
+      <script src="functions.js"></script>
     </head>
     <body>
 
@@ -23,11 +23,8 @@
       </main>
       <form style="margin-top: 20px">
         <!--This is where all the settings for the bar chart will be located-->
-        <label>Number of graph elements:</label>
-
-        <button></button>
-        <p></p>
-        <button></button>
+        <label>Number of graph elements (integer value between 2 and 20):</label>
+        <input type="text" id="number-of-elements" value="3"><br>
 
         <label>Graph colour:</label>
         <select id="colour-picker">
@@ -43,16 +40,50 @@
       </footer>
 
       <script type="text/javascript">
+
+        let numOfElements = 3;
+        let barChartData = [0, 50, 100];
+
+        const valuePositions = ["bar-label-bottom", "bar-label-middle", "bar-label-top"];
+
+        let labelColour = "white";
+
+        let barSettings = {
+          labelPosition: valuePositions[0],
+          barColour: "red",
+          labelColour: "white",
+          fontColour: "white",
+          fontSize: 13,
+          spacing: "5px",
+          axisLabelX: "X Axis",
+          axisLabelY: "Y Axis",
+          scaleData: false, //Whether the data should be shown from 0, or from the lowest point
+        }
+
+        const barElement = Document.getElementById("#bar-container");
+
+        function drawBarChart(data, options, element){
+          $(".bar").css("background-color", barSettings.barColour);
+        }
+
+        drawBarChart(barChartData, barSettings, barElement);
+
+
         $(".bar").click(function(){
           $(this).children().html(function(){
             return Math.round(Math.random() * 100);
           });
         });
 
-        //Change colour of bars
-        $("select").change(function(){
-          let clr = $("select option:selected").val();
-          $(".bar").css("background-color", clr);
+        $("#number-of-elements").on("input", function(){
+          let val = $("#number-of-elements").val();
+          val = parseInt(val);
+
+          if(!isNaN(val)){
+
+
+
+          }
         });
 
       </script>
