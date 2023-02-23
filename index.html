@@ -24,13 +24,29 @@
         </main>
         <form style="margin-top: 20px">
           <!--This is where all the settings for the bar chart will be located-->
-          <label>Number of graph elements:</label>
-          <input type="number" maxlength="2" min="2" max="20" id="number-of-elements" oninput="updateNumberOfElements(value)" value="3"><br>
-
-          <table id="data-form">
-
+          <label>Bar Chart Title:</label>
+          <input type="text" maxlength="20" oninput="updateChartOptions('chartTitle', value)" value="Bar Chart">
+          <br><br>
+          <table>
+            <tr>
+              <th><label>X-Axis Label:</label></th>
+              <th><label>Y-Axis Label:</label></th>
+            </tr>
+            <tr>
+              <td><input type="text" maxlength="20" oninput="updateChartOptions('axisLabelX', value)" value="X Axis Stuff"></td>
+              <td><input type="text" maxlength="20" oninput="updateChartOptions('axisLabelY', value)" value="Y Axis Stuff"></td>
+            </tr>
           </table>
 
+          <br><br>
+          <label>Number of graph elements:</label>
+          <input type="number" maxlength="2" min="2" max="20" id="number-of-elements" oninput="updateNumberOfElements(value)" value="3"><br>
+          <br><br>
+          <label>Individual bar labels:</label>
+          <input checked type="checkbox" id="show-labels-choice" oninput="updateChartOptions('barLabels', checked);updateDataInputFields()">
+          <br>
+          <table id="data-form"></table>
+          <br>
           <label>Graph colour:</label>
           <select id="colour-picker">
             <option class="bar-colour" value="salmon">Red</option>
@@ -38,7 +54,7 @@
             <option class="bar-colour" value="cornflowerblue">Blue</option>
             <option class="bar-colour" value="goldenrod">Yellow</option>
           </select>
-          <br>
+          <br><br>
           <input type="button" id="generate-chart-button" value="Generate Chart">
         </form>
       </div>
@@ -57,8 +73,8 @@
         $("main").css("display", "none");
 
         let numOfElements = 3;
-        let barChartData = [33, 50, 80, 23, 55];
-        let barChartLabel = [];
+        let barChartData = [33, 50, 80];
+        let barChartLabel = ["Data", "Data", "Data"];
 
         const valuePositions = ["bar-label-bottom", "bar-label-middle", "bar-label-top"];
 
@@ -71,8 +87,10 @@
           titleColour: "white",
           titleSize: 20,
           spacing: 0.5,
+          chartTitle: "Bar Chart",
           axisLabelX: "X Axis",
           axisLabelY: "Y Axis",
+          barLabels: true,
           scaleData: false, //Whether the data should be shown from 0, or from the lowest point
         }
 
@@ -91,8 +109,6 @@
           const barSize = barArea - spaceSize;
 
           const startLocation = offset + barSize * options.spacing;
-
-
 
           let lowestDataNum = data[0];
           let highestDataNum = data[0];
@@ -117,6 +133,9 @@
           getRange();
 
           function createChartHTML(){
+            //update title
+            $("#chart-title").html(options.chartTitle);
+
             let output = `<h3 id="y-axis-label">Label Text Here</h3>`;
             output += `<div id="data-scale"><hr><hr><hr></div>`;
 
@@ -141,12 +160,24 @@
           //$("main").css("display", "initial");
         }
 
-        drawBarChart(barChartData, barSettings, barElement);
+        updateDataInputFields();
+
+        function updateDataInputFields(){
+          let output = `<tr>`
+          output += barSettings.barLabels ? `<th>Data Label</th><th>Data Value</th></tr><tr>` : `<th>Data Value</th></tr><tr>`;
+
+          for(let i = 0; i < numOfElements; i++){
+            if(barSettings.barLabels){
+              output += `<td><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(${i}, value)" value="${barChartLabel[i]}"></td>`;
+            }
+            output += `<td><input type="number" class="data-value-input" oninput="writeData(${i}, value)" value="${barChartData[i]}"></td></tr>`;
+          }
+
+          $("#data-form").html(output);
+        }
 
         function updateNumberOfElements(val){
           val = Math.ceil(val);
-
-
             val = Math.max(val, 2);
 
             if(val > numOfElements){
@@ -162,16 +193,13 @@
           }
 
           numOfElements = val;
-          let output = `<tr><th>Data Label</th><th>Data Value</th></tr><tr>`;
-
-          for(let i = 0; i < numOfElements; i++){
-            output += `<td><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(${i}, value)" value="${barChartLabel[i]}"></td>`;
-            output += `<td><input type="number" class="data-value-input" oninput="writeData(${i}, value)" value="${barChartData[i]}"></td></tr>`;
-          }
-
-          $("#data-form").html(output);
+          updateDataInputFields();
 
         };
+
+        function updateChartOptions(property, value){
+          barSettings[property] = value;
+        }
 
         function writeLabel(index, value){
           barChartLabel[index] = value;
