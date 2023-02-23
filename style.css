@@ -2,8 +2,13 @@ html {
   background-color:slategray;
 }
 
+body {
+  margin: 0;
+}
+
 h2 {
   color: lightgoldenrodyellow;
+  text-align: center;
 }
 
 h3 {
@@ -17,6 +22,12 @@ hr {
   position: relative;
 }
 
+
+
+#content {
+  margin: 10px;
+}
+
 #bar-container {
   display: flex;
   width: 90%;
@@ -26,6 +37,7 @@ hr {
   outline-color: black;
   padding: 5px;
   background-color: lightslategray;
+  position: relative;
 }
 
 #y-axis-label {
@@ -48,12 +60,10 @@ hr {
   outline-width: 3px;
   outline-style: outset;
   outline-color: black;
-  flex: 1;
-  margin: 10px;
-  margin-bottom: 5px;
-  margin-top: auto;
+  /*flex: 1;*/
+  bottom: 10px;
   border-radius: 10px 10px 0 0;
-  position: relative;
+  position: absolute;
 
 }
 
@@ -77,9 +87,12 @@ hr {
 }
 
 .footer {
+  background-color: black;
+  color: white;
   text-align: center;
-  position: absolute;
+  position: fixed;
   width: 100%;
   bottom: 0px;
   padding: 10px;
+
 }

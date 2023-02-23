@@ -9,40 +9,56 @@
     </head>
     <body>
 
-      <h2>Bar Chart</h2>
-      <main>
-        <!--This is where the bar chart will be-->
-        <div id="bar-container">
-          <div class="bar"><p class="bar-label bar-label-top">100</p></div>
-          <div class="bar"><p class="bar-label bar-label-middle">70</p></div>
-          <div class="bar"><p class="bar-label bar-label-bottom">20</p></div>
-          <div class="bar"><p class="bar-label">90</p></div>
-          <div class="bar"><p class="bar-label">90</p></div>
-          <div class="bar"><p class="bar-label">45</p></div>
+      <div id="content">
+        <main>
+          <h2 id="chart-title">Bar Chart</h2>
+          <!--This is where the bar chart will be-->
+          <div id="bar-container">
+            <div class="bar"><p class="bar-label bar-label-top">100</p></div>
+            <div class="bar"><p class="bar-label bar-label-middle">70</p></div>
+            <div class="bar"><p class="bar-label bar-label-bottom">20</p></div>
+            <div class="bar"><p class="bar-label">90</p></div>
+            <div class="bar"><p class="bar-label">90</p></div>
+            <div class="bar"><p class="bar-label">45</p></div>
+          </div>
+        </main>
+        <form style="margin-top: 20px">
+          <!--This is where all the settings for the bar chart will be located-->
+          <label>Number of graph elements:</label>
+          <input type="number" maxlength="2" min="2" max="20" id="number-of-elements" oninput="updateNumberOfElements(value)" value="3"><br>
+
+          <table id="data-form">
+
+          </table>
+
+          <label>Graph colour:</label>
+          <select id="colour-picker">
+            <option class="bar-colour" value="salmon">Red</option>
+            <option class="bar-colour" value="mediumseagreen">Green</option>
+            <option class="bar-colour" value="cornflowerblue">Blue</option>
+            <option class="bar-colour" value="goldenrod">Yellow</option>
+          </select>
+          <br>
+          <input type="button" id="generate-chart-button" value="Generate Chart">
+        </form>
       </div>
-      </main>
-      <form style="margin-top: 20px">
-        <!--This is where all the settings for the bar chart will be located-->
-        <label>Number of graph elements (integer value between 2 and 20):</label>
-        <input type="text" id="number-of-elements" value="3"><br>
-
-        <label>Graph colour:</label>
-        <select id="colour-picker">
-          <option class="bar-colour" value="salmon">Red</option>
-          <option class="bar-colour" value="mediumseagreen">Green</option>
-          <option class="bar-colour" value="cornflowerblue">Blue</option>
-          <option class="bar-colour" value="goldenrod">Yellow</option>
-        </select>
-
-      </form>
       <footer class="footer">
         Created by Eric (Valeriy) Kovalevskyy in February of 2023 for Lighthouse Labs Prep Module.
       </footer>
 
       <script type="text/javascript">
 
+        $("#generate-chart-button").click(function(){
+          $("main").css("display", "initial");
+          drawBarChart(barChartData, barSettings, barElement);
+        });
+
+        let chartDisplay = false;
+        $("main").css("display", "none");
+
         let numOfElements = 3;
-        let barChartData = ["33", "50", "100", "88", "69", "39"];
+        let barChartData = [33, 50, 80, 23, 55];
+        let barChartLabel = [];
 
         const valuePositions = ["bar-label-bottom", "bar-label-middle", "bar-label-top"];
 
@@ -52,9 +68,9 @@
           labelPosition: valuePositions[2],
           barColour: "salmon",
           labelColour: "black",
-          fontColour: "white",
-          fontSize: 13,
-          spacing: "10px",
+          titleColour: "white",
+          titleSize: 20,
+          spacing: 0.5,
           axisLabelX: "X Axis",
           axisLabelY: "Y Axis",
           scaleData: false, //Whether the data should be shown from 0, or from the lowest point
@@ -64,62 +80,105 @@
 
         function drawBarChart(data, options, element){
 
+          const size = []; //Get size of the container to determine the size of the bars
+
+          const offset = 60;
+          size[0] = $("#bar-container").width() - offset;
+          size[1] = $("#bar-container").height();
+
+          const barArea = Math.floor(size[0] / numOfElements);
+          const spaceSize = Math.floor(barArea * options.spacing);
+          const barSize = barArea - spaceSize;
+
+          const startLocation = offset + barSize * options.spacing;
+
+
+
           let lowestDataNum = data[0];
           let highestDataNum = data[0];
 
-          for(let i = 0; i < data.length; i++){ //go through data to determine range
-            let entry = parseFloat(data[i]);
-            if(isNaN(entry)){
-              data[i] = "Invalid Data";
-              lowestDataNum = 0;
-              highestDataNum = 0;
-            } else {
-              if(entry < lowestDataNum){
-                lowestDataNum = data[i];
-              }
-              if(entry > highestDataNum){
-                highestDataNum = data[i];
+          function getRange(){ //go through data to determine range
+            for(let i = 0; i < data.length; i++){
+              let entry = parseFloat(data[i]);
+              if(isNaN(entry)){
+                data[i] = "Invalid Data";
+                lowestDataNum = 0;
+                highestDataNum = 0;
+              } else {
+                if(entry < lowestDataNum){
+                  lowestDataNum = data[i];
+                }
+                if(entry > highestDataNum){
+                  highestDataNum = data[i];
+                }
               }
             }
           }
+          getRange();
 
-          let output = `<h3 id="y-axis-label">Label Text Here</h3>`;
-          output += `<div id="data-scale"><hr><hr><hr></div>`;
+          function createChartHTML(){
+            let output = `<h3 id="y-axis-label">Label Text Here</h3>`;
+            output += `<div id="data-scale"><hr><hr><hr></div>`;
 
-          for(const entry of data){
-
-            const dataPercentage = Math.round(entry / highestDataNum * 95);
-
-            output += `<div class="bar" style="height: ${dataPercentage}%"><p class="bar-label ${options.labelPosition}">${entry}</p></div>`;
+            for(let i = 0; i < numOfElements; i++){
+              const dataPercentage = Math.round(data[i] / highestDataNum * 95);
+              const barLocation = (startLocation + barArea * i).toString();
+              output += `<div class="bar" style="height: ${dataPercentage}%; margin-left: ${barLocation}px"><p class="bar-label ${options.labelPosition}">${data[i]}</p></div>`;
+            }
+            element.innerHTML = output;
           }
-          element.innerHTML = output;
+          createChartHTML();
 
-          $(".bar").css("background-color", options.barColour);
-          $(".bar").css("margin-left", options.spacing);
-          $(".bar").css("margin-right", options.spacing);
-          $(".bar-label").css("color", options.labelColour);
+          function applyChartCSS(){
+            $(".bar").width(barSize + "px");
+
+
+            $(".bar").css("background-color", options.barColour);
+            $(".bar-label").css("color", options.labelColour);
+          }
+          applyChartCSS();
+
+          //$("main").css("display", "initial");
         }
 
         drawBarChart(barChartData, barSettings, barElement);
 
+        function updateNumberOfElements(val){
+          val = Math.ceil(val);
 
 
-        $(".bar").click(function(){
-          $(this).children().html(function(){
-            return Math.round(Math.random() * 100);
-          });
-        });
+            val = Math.max(val, 2);
 
-        $("#number-of-elements").on("input", function(){
-          let val = $("#number-of-elements").val();
-          val = parseInt(val);
+            if(val > numOfElements){
 
-          if(!isNaN(val)){
-
-            numOfElements = val;
-
+            for(let i = 0; i < val; i++){
+              if(barChartData[i] === undefined){
+                barChartData[i] = 0;
+              }
+              if(barChartLabel[i] === undefined){
+                barChartLabel[i] = "Data";
+              }
+            }
           }
-        });
+
+          numOfElements = val;
+          let output = `<tr><th>Data Label</th><th>Data Value</th></tr><tr>`;
+
+          for(let i = 0; i < numOfElements; i++){
+            output += `<td><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(${i}, value)" value="${barChartLabel[i]}"></td>`;
+            output += `<td><input type="number" class="data-value-input" oninput="writeData(${i}, value)" value="${barChartData[i]}"></td></tr>`;
+          }
+
+          $("#data-form").html(output);
+
+        };
+
+        function writeLabel(index, value){
+          barChartLabel[index] = value;
+        }
+        function writeData(index, value){
+          barChartData[index] = value;
+        }
 
       </script>
     </body>
