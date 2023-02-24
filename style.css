@@ -23,17 +23,19 @@ hr {
 }
 
 #content {
-  margin: 10px;
+  margin: auto;
+  max-width: 70%;
 }
 
 #bar-container {
   display: flex;
-  width: 90%;
+  width: 100%;
   height: 500px;
-  outline-style: groove;
+  /*outline-style: groove;
   outline-width: 5px;
-  outline-color: black;
-  padding: 5px;
+  outline-color: black;*/
+  padding-top: 20px;
+  padding-bottom: 100px;
   background-color: lightslategray;
   position: relative;
 }
@@ -54,12 +56,21 @@ hr {
   padding: 0px;
 }
 
+#settings-form {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+  display: table;
+  place-content: center;
+}
+
 .bar {
   outline-width: 3px;
   outline-style: outset;
   outline-color: black;
   /*flex: 1;*/
-  bottom: 10px;
   border-radius: 10px 10px 0 0;
   position: absolute;
 

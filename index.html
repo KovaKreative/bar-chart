@@ -22,10 +22,18 @@
             <div class="bar"><p class="bar-label">45</p></div>
           </div>
         </main>
-        <form style="margin-top: 20px">
+        <form id="settings-form">
           <!--This is where all the settings for the bar chart will be located-->
           <label>Bar Chart Title:</label>
           <input type="text" maxlength="20" oninput="updateChartOptions('chartTitle', value)" value="Bar Chart">
+          <br><br>
+          <label>Title colour:</label>
+          <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('titleColour', this.value)">
+            <option class="colour-choice" value="pink">Red</option>
+            <option class="colour-choice" value="palegreen">Green</option>
+            <option class="colour-choice" value="lightskyblue">Blue</option>
+            <option class="colour-choice" value="khaki">Yellow</option>
+          </select>
           <br><br>
           <table>
             <tr>
@@ -37,24 +45,31 @@
               <td><input type="text" maxlength="20" oninput="updateChartOptions('axisLabelY', value)" value="Y Axis Stuff"></td>
             </tr>
           </table>
-
-          <br><br>
+          <br>
+          <label>Label colour:</label>
+          <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('labelColour', this.value)">
+            <option class="colour-choice" value="orangered">Red</option>
+            <option class="colour-choice" value="teal">Green</option>
+            <option class="colour-choice" value="midnightblue">Blue</option>
+            <option class="colour-choice" value="olive">Yellow</option>
+          </select>
+          <br><br><hr><br>
           <label>Number of graph elements:</label>
-          <input type="number" maxlength="2" min="2" max="20" id="number-of-elements" oninput="updateNumberOfElements(value)" value="3"><br>
-          <br><br>
-          <label>Individual bar labels:</label>
-          <input checked type="checkbox" id="show-labels-choice" oninput="updateChartOptions('barLabels', checked);updateDataInputFields()">
+          <input autocomplete="off" type="number" maxlength="2" min="2" max="20" id="number-of-elements" oninput="updateNumberOfElements(value)" value="3"><br>
+          <br>
+          <input autocomplete="off" checked type="checkbox" id="show-labels-choice" oninput="updateChartOptions('barLabels', checked);updateDataInputFields()">
+          <label>Individual bar labels</label>
           <br>
           <table id="data-form"></table>
-          <br>
+          <br><hr><br>
           <label>Graph colour:</label>
-          <select id="colour-picker">
-            <option class="bar-colour" value="salmon">Red</option>
-            <option class="bar-colour" value="mediumseagreen">Green</option>
-            <option class="bar-colour" value="cornflowerblue">Blue</option>
-            <option class="bar-colour" value="goldenrod">Yellow</option>
+          <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barColour', this.value)">
+            <option class="colour-choice" value="salmon">Red</option>
+            <option class="colour-choice" value="mediumseagreen">Green</option>
+            <option class="colour-choice" value="cornflowerblue">Blue</option>
+            <option class="colour-choice" value="goldenrod">Yellow</option>
           </select>
-          <br><br>
+          <br><br><hr><br>
           <input type="button" id="generate-chart-button" value="Generate Chart">
         </form>
       </div>
@@ -83,7 +98,7 @@
         let barSettings = {
           labelPosition: valuePositions[2],
           barColour: "salmon",
-          labelColour: "black",
+          labelColour: "",
           titleColour: "white",
           titleSize: 20,
           spacing: 0.5,
@@ -109,6 +124,7 @@
           const barSize = barArea - spaceSize;
 
           const startLocation = offset + barSize * options.spacing;
+          const bottomOffset = $("#bar-container").css("padding-bottom");
 
           let lowestDataNum = data[0];
           let highestDataNum = data[0];
@@ -142,13 +158,33 @@
             for(let i = 0; i < numOfElements; i++){
               const dataPercentage = Math.round(data[i] / highestDataNum * 95);
               const barLocation = (startLocation + barArea * i).toString();
-              output += `<div class="bar" style="height: ${dataPercentage}%; margin-left: ${barLocation}px"><p class="bar-label ${options.labelPosition}">${data[i]}</p></div>`;
+              output += `<div class="bar" style="height: ${dataPercentage}%; margin-left: ${barLocation}px; bottom: ${bottomOffset}"><p class="bar-label ${options.labelPosition}">${data[i]}</p></div>`;
             }
             element.innerHTML = output;
           }
           createChartHTML();
 
           function applyChartCSS(){
+            $("#chart-title").css("color", options.titleColour);
+            let titleBackgroundColour;
+            switch(options.titleColour){
+              case "pink":
+                titleBackgroundColour = "maroon";
+                break;
+              case "palegreen":
+                titleBackgroundColour = "darkslategray";
+                break;
+              case "lightskyblue":
+                titleBackgroundColour = "navy";
+                break;
+              case "khaki":
+                titleBackgroundColour = "saddlebrown";
+                break;
+              default:
+                titleBackgroundColour = "indigo";
+            }
+            $("#chart-title").css("background-color", titleBackgroundColour);
+
             $(".bar").width(barSize + "px");
 
 
