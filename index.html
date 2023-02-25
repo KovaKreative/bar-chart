@@ -83,6 +83,9 @@
             <option class="colour-choice" value="cornflowerblue">Blue</option>
             <option class="colour-choice" value="gold">Yellow</option>
           </select>
+          <br><br>
+          <label>Subdivisions:</label>
+          <input autocomplete="off" type="number" maxlength="1" min="0" max="5" oninput="updateChartOptions('numOfTicks', (parseInt(value) + parseInt(value) - 1))" value="3">
           <br><br><hr><br>
           <input type="button" id="generate-chart-button" value="Generate Chart">
         </form>
@@ -119,6 +122,7 @@
           chartTitle: "Bar Chart",
           axisLabelX: "X Axis",
           axisLabelY: "Y Axis",
+          numOfTicks: 3,
           barLabels: true,
           scaleData: false, //Whether the data should be shown from 0, or from the lowest point
         }
@@ -173,10 +177,18 @@
             `<h4 class="scale-number" style="top: 0 margin-top: 10px">${highestDataNum}</h4>` +
             `<h4 class="scale-number" style="top: 280px">${highestDataNum * 0.5}</h4>` +
             `<h4 class="scale-number" style="top: 540px">0</h4>` +
-            `<div id="data-scale"><hr></div>`;
+            `<div id="data-scale">`;
+
+            console.log(options.numOfTicks);
+
+            for(let i = 0; i < options.numOfTicks; i++){
+              output += `<hr>`;
+            }
+
+            output += `</div>`;
 
             for(let i = 0; i < numOfElements; i++){
-              const dataPercentage = Math.round(data[i] / highestDataNum * maxPercentage);
+              const dataPercentage = Math.floor(data[i] / highestDataNum * maxPercentage);
 
               const barLocation = (startLocation + barArea * i).toString();
               const labelPositionY = size[1] + 30;
@@ -219,11 +231,12 @@
             $("#chart-title").css("font-size", options.titleSize + "px");
 
             $(".axis-label").css("color", options.labelColour);
-            $(".bar").width(barSize + "px");
             $(".bar-label").width(barSize + "px");
-
-
+            $(".bar").width(barSize + "px");
             $(".bar").css("background-color", options.barColour);
+            let gap = Math.floor(parseInt($("#data-scale").css("height"), 10) / (parseInt(options.numOfTicks) + 1)) - 1.5;
+
+            $("#data-scale hr").css("margin-top", gap + "px");
             //$(".bar-label").css("color", options.labelColour);
           }
           applyChartCSS();

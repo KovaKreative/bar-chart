@@ -66,6 +66,7 @@ hr {
 
 #data-scale {
   display: flex;
+  flex-direction: column;
   position: absolute;
   border-left: 4px solid;
   border-top: 4px solid;
@@ -74,6 +75,15 @@ hr {
   width: 840px;
   height: 536px;
   left: 100px;
+  align-items: center;
+
+}
+
+#data-scale > hr {
+  margin: 0;
+  height: 0px;
+
+  background-color: black;
 }
 
 #settings-form {
