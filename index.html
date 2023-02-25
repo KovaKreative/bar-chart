@@ -25,7 +25,10 @@
         <form id="settings-form">
           <!--This is where all the settings for the bar chart will be located-->
           <label>Bar Chart Title:</label>
-          <input type="text" maxlength="20" oninput="updateChartOptions('chartTitle', value)" value="Bar Chart">
+          <input autocomplete="off" type="text" maxlength="20" oninput="updateChartOptions('chartTitle', value)" value="Bar Chart">
+          <br><br>
+          <label>Bar Chart Font Size:</label>
+          <input autocomplete="off" type="number" maxlength="2" min="14" max="72" oninput="updateChartOptions('titleSize', value)" value="26">
           <br><br>
           <label>Title colour:</label>
           <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('titleColour', this.value)">
@@ -41,17 +44,17 @@
               <th><label>Y-Axis Label:</label></th>
             </tr>
             <tr>
-              <td><input type="text" maxlength="20" oninput="updateChartOptions('axisLabelX', value)" value="X Axis Stuff"></td>
-              <td><input type="text" maxlength="20" oninput="updateChartOptions('axisLabelY', value)" value="Y Axis Stuff"></td>
+              <td><input autocomplete="off" type="text" maxlength="20" oninput="updateChartOptions('axisLabelX', value)" value="X Axis"></td>
+              <td><input autocomplete="off" type="text" maxlength="20" oninput="updateChartOptions('axisLabelY', value)" value="Y Axis"></td>
             </tr>
           </table>
           <br>
           <label>Label colour:</label>
           <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('labelColour', this.value)">
-            <option class="colour-choice" value="orangered">Red</option>
-            <option class="colour-choice" value="teal">Green</option>
-            <option class="colour-choice" value="midnightblue">Blue</option>
-            <option class="colour-choice" value="olive">Yellow</option>
+            <option class="colour-choice" value="maroon">Red</option>
+            <option class="colour-choice" value="darkslategray">Green</option>
+            <option class="colour-choice" value="navy">Blue</option>
+            <option class="colour-choice" value="saddlebrown">Yellow</option>
           </select>
           <br><br><hr><br>
           <label>Number of graph elements:</label>
@@ -62,12 +65,23 @@
           <br>
           <table id="data-form"></table>
           <br><hr><br>
+          <label>Show numerical values in bars:</label>
+          <select autocomplete="off" onchange="updateChartOptions('valuePosition', valuePositions[this.value])">
+            <option value="2">Top</option>
+            <option value="1">Middle</option>
+            <option value="0">Bottom</option>
+            <option value="3">Do not show</option>
+          </select>
+          <br><br>
+          <label>Bar to space ratio (percentage):</label>
+          <input autocomplete="off" type="number" maxlength="3" min="10" max="100" oninput="updateChartOptions('spacing', value)" value="50">
+          <br><br>
           <label>Graph colour:</label>
           <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barColour', this.value)">
             <option class="colour-choice" value="salmon">Red</option>
             <option class="colour-choice" value="mediumseagreen">Green</option>
             <option class="colour-choice" value="cornflowerblue">Blue</option>
-            <option class="colour-choice" value="goldenrod">Yellow</option>
+            <option class="colour-choice" value="gold">Yellow</option>
           </select>
           <br><br><hr><br>
           <input type="button" id="generate-chart-button" value="Generate Chart">
@@ -91,17 +105,17 @@
         let barChartData = [33, 50, 80];
         let barChartLabel = ["Data", "Data", "Data"];
 
-        const valuePositions = ["bar-label-bottom", "bar-label-middle", "bar-label-top"];
+        const valuePositions = ["bar-value-bottom", "bar-value-middle", "bar-value-top", "none"];
 
         let labelColour = "white";
 
         let barSettings = {
-          labelPosition: valuePositions[2],
+          valuePosition: valuePositions[2],
           barColour: "salmon",
-          labelColour: "",
-          titleColour: "white",
+          labelColour: "maroon",
+          titleColour: "pink",
           titleSize: 20,
-          spacing: 0.5,
+          spacing: 50,
           chartTitle: "Bar Chart",
           axisLabelX: "X Axis",
           axisLabelY: "Y Axis",
@@ -115,16 +129,18 @@
 
           const size = []; //Get size of the container to determine the size of the bars
 
-          const offset = 60;
+          const offset = 100;
           size[0] = $("#bar-container").width() - offset;
           size[1] = $("#bar-container").height();
 
+          const bottomOffset = parseInt($("#bar-container").css("padding-bottom"), 10);
+          const spacing = 1 - Math.floor(options.spacing) * 0.01;
           const barArea = Math.floor(size[0] / numOfElements);
-          const spaceSize = Math.floor(barArea * options.spacing);
+          const spaceSize = Math.floor(barArea * spacing);
           const barSize = barArea - spaceSize;
 
-          const startLocation = offset + barSize * options.spacing;
-          const bottomOffset = $("#bar-container").css("padding-bottom");
+          const startLocation = offset + barSize * spacing;
+          const maxPercentage = 100 - (bottomOffset / size[1] * 100); //Maximum percentage of bar size relative to the container size
 
           let lowestDataNum = data[0];
           let highestDataNum = data[0];
@@ -152,14 +168,30 @@
             //update title
             $("#chart-title").html(options.chartTitle);
 
-            let output = `<h3 id="y-axis-label">Label Text Here</h3>`;
-            output += `<div id="data-scale"><hr><hr><hr></div>`;
+            //Separating output into multiple strings on separate linesfor readability
+            let output = `<h3 id="y-axis-label" class="axis-label">${options.axisLabelY}</h3>` +
+            `<h4 class="scale-number" style="top: 0 margin-top: 10px">${highestDataNum}</h4>` +
+            `<h4 class="scale-number" style="top: 280px">${highestDataNum * 0.5}</h4>` +
+            `<h4 class="scale-number" style="top: 540px">0</h4>` +
+            `<div id="data-scale"><hr></div>`;
 
             for(let i = 0; i < numOfElements; i++){
-              const dataPercentage = Math.round(data[i] / highestDataNum * 95);
+              const dataPercentage = Math.round(data[i] / highestDataNum * maxPercentage);
+
               const barLocation = (startLocation + barArea * i).toString();
-              output += `<div class="bar" style="height: ${dataPercentage}%; margin-left: ${barLocation}px; bottom: ${bottomOffset}"><p class="bar-label ${options.labelPosition}">${data[i]}</p></div>`;
+              const labelPositionY = size[1] + 30;
+
+              output += `<div class="bar" style="height: ${dataPercentage}%; margin-left: ${barLocation}px; bottom: ${bottomOffset}px">`;
+              if(options.valuePosition != valuePositions[3]){
+                output += `<p class="bar-value ${options.valuePosition}">${data[i]}</p>`;
+              }
+
+              output += `</div>`;
+              if(options.barLabels){
+                output += `<div class="bar-label" style="margin-left: ${barLocation}px; top: ${labelPositionY}px">${barChartLabel[i]}</div>`;
+              }
             }
+            output += `<h3 id="x-axis-label" class="axis-label" style="margin-bottom: ${-(options.barLabels ? 80 : 40)}px;">${options.axisLabelX}</h3>`;
             element.innerHTML = output;
           }
           createChartHTML();
@@ -184,16 +216,20 @@
                 titleBackgroundColour = "indigo";
             }
             $("#chart-title").css("background-color", titleBackgroundColour);
+            $("#chart-title").css("font-size", options.titleSize + "px");
 
+            $(".axis-label").css("color", options.labelColour);
             $(".bar").width(barSize + "px");
+            $(".bar-label").width(barSize + "px");
 
 
             $(".bar").css("background-color", options.barColour);
-            $(".bar-label").css("color", options.labelColour);
+            //$(".bar-label").css("color", options.labelColour);
           }
           applyChartCSS();
 
           //$("main").css("display", "initial");
+          window.scrollTo(0,0);
         }
 
         updateDataInputFields();

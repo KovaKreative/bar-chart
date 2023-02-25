@@ -4,6 +4,8 @@ html {
 
 body {
   margin: 0;
+  font-family: Verdana, sans-serif;
+
 }
 
 h2 {
@@ -23,37 +25,55 @@ hr {
 }
 
 #content {
+  display: table;
+  place-content: center;
   margin: auto;
-  max-width: 70%;
+  max-width: 1920px;
+}
+
+#chart-title {
+  border-radius: 5px 5px 0px 0px;
+  margin-bottom: 0px;
+  width: 960px;
+  font-size: 26px;
 }
 
 #bar-container {
-  display: flex;
-  width: 100%;
-  height: 500px;
-  /*outline-style: groove;
-  outline-width: 5px;
-  outline-color: black;*/
+  width: 960px;
+  height: 540px;
+  margin-top: 0px;
   padding-top: 20px;
   padding-bottom: 100px;
-  background-color: lightslategray;
+  background-color: lightsteelblue;
   position: relative;
+  border-radius: 0px 0px 5px 5px;
 }
 
 #y-axis-label {
+  position: absolute;
   writing-mode: sideways-lr;
   text-orientation:sideways;
   text-align: center;
+  height: 540px;
+}
+
+#x-axis-label {
+  position: absolute;
+  bottom: 100px;
+  text-align: center;
+  width: 100%;
 }
 
 #data-scale {
   display: flex;
-  border-left: 2px solid;
-  border-top: 2px solid;
-  border-bottom: 2px solid;
+  position: absolute;
+  border-left: 4px solid;
+  border-top: 4px solid;
+  border-bottom: 4px solid;
   border-color: black;
-  min-width: 10px;
-  padding: 0px;
+  width: 840px;
+  height: 536px;
+  left: 100px;
 }
 
 #settings-form {
@@ -67,31 +87,44 @@ hr {
 }
 
 .bar {
-  outline-width: 3px;
-  outline-style: outset;
-  outline-color: black;
   /*flex: 1;*/
+  border: solid;
+  border-width: 3px 4px 0px 2px;
+  border-color: #00000033;
   border-radius: 10px 10px 0 0;
   position: absolute;
-
 }
 
 .bar-label {
+  margin-top: auto;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+}
+
+.bar-value {
   margin-bottom: 4px;
   margin-top: auto;
   text-align: center;
   position: absolute;
   width: 100%;
+}
+.scale-number {
+  width: 95px;
   left: 0px;
+  margin-bottom: 4px;
+  margin-top: auto;
+  text-align: right;
+  position: absolute;
 }
 
-.bar-label-top {
-  top: 2%;
+.bar-value-top {
+  top: 1%;
 }
-.bar-label-middle {
+.bar-value-middle {
   top: 50%;
 }
-.bar-label-bottom {
+.bar-value-bottom {
   bottom: 0;
 }
 
