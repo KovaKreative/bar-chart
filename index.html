@@ -139,12 +139,13 @@
           const barSize = barArea - spaceSize;
 
           const startLocation = offset + barSize * spacing;
-          const maxPercentage = 100 - (bottomOffset / size[1] * 100); //Maximum percentage of bar size relative to the container size
+          //const maxPercentage = 100 - (bottomOffset / size[1] * 100); //Maximum percentage of bar size relative to the container size
 
-          let lowestDataNum = data[1][0];
-          let highestDataNum = data[1][0];
+          let lowestDataNum = 0;
+          let highestDataNum = 0;
 
           function getRange(){ //go through data to determine range
+            /* This method was done for a single data set
             for(let i = 0; i < data[1].length; i++){
               let entry = parseFloat(data[1][i]);
               if(isNaN(entry)){
@@ -158,6 +159,27 @@
                 if(entry > highestDataNum){
                   highestDataNum = data[1][i];
                 }
+              }
+            }
+            */
+            for(let d = 0; d < numOfElements; d++){
+              let sumOfEntries = 0;
+              for(let s = 1; s <= numOfDataSets; s++){
+                let entry = parseFloat(data[s][d]);
+                if(isNaN(entry)){
+                  data[s][d] = 0;
+                } else {
+                  sumOfEntries += entry;
+                }
+                if(d == 0){ //The lowest data value needs to be at least as big as the first entry
+                  lowestDataNum = sumOfEntries;
+                }
+              }
+              if(sumOfEntries < lowestDataNum){
+                lowestDataNum = sumOfEntries;
+              }
+              if(sumOfEntries > highestDataNum){
+                highestDataNum = sumOfEntries;
               }
             }
           }
@@ -174,8 +196,6 @@
             `<h4 class="scale-number" style="top: 540px">0</h4>` +
             `<div id="data-scale">`;
 
-            console.log(options.numOfTicks);
-
             for(let i = 0; i < options.numOfTicks; i++){
               output += `<hr>`;
             }
@@ -183,19 +203,30 @@
             output += `</div>`;
 
             for(let i = 0; i < numOfElements; i++){
-              const dataPercentage = Math.floor(data[1][i] / highestDataNum * maxPercentage);
+              let additionalVerticalOffset = 0;
+              for(let s = 1; s <= numOfDataSets; s++){
+                //const dataPercentage = data[s][i] / highestDataNum * maxPercentage;
+                const dataHeight = (data[s][i] / highestDataNum) * size[1];
+                const verticalAdjustment = parseInt($(".bar").css("border-top-width"), 10);
+                const normalizedHeight = dataHeight - verticalAdjustment;
+                const barLocation = (startLocation + barArea * i).toString();
+                const labelPositionY = size[1] + 30;
 
-              const barLocation = (startLocation + barArea * i).toString();
-              const labelPositionY = size[1] + 30;
+                const borderRadius = s == numOfDataSets ? "border-radius: 10px 10px 0 0" : "";
 
-              output += `<div class="bar" style="height: ${dataPercentage}%; margin-left: ${barLocation}px; bottom: ${bottomOffset}px">`;
-              if(options.valuePosition != valuePositions[3]){
-                output += `<p class="bar-value ${options.valuePosition}">${data[1][i]}</p>`;
-              }
+                output += `<div class="bar" style="height: ${normalizedHeight}px; margin-left: ${barLocation}px; bottom: ${bottomOffset + additionalVerticalOffset}px;` +
+                `${borderRadius}">`;
+                if(options.valuePosition != valuePositions[3]){
+                  const fontSize = Math.min(normalizedHeight, 12);
+                  output += `<p class="bar-value ${options.valuePosition}" style="font-size: ${fontSize}px">${data[s][i]}</p>`;
+                }
 
-              output += `</div>`;
-              if(options.barLabels){
-                output += `<div class="bar-label" style="margin-left: ${barLocation}px; top: ${labelPositionY}px">${data[0][i]}</div>`;
+                output += `</div>`;
+                if(options.barLabels){
+                  output += `<div class="bar-label" style="margin-left: ${barLocation}px; top: ${labelPositionY}px">${data[0][i]}</div>`;
+                }
+
+                additionalVerticalOffset += dataHeight;
               }
             }
             output += `<h3 id="x-axis-label" class="axis-label" style="margin-bottom: ${-(options.barLabels ? 80 : 40)}px;">${options.axisLabelX}</h3>`;
@@ -252,24 +283,26 @@
 
           for(let i = 0; i < numOfElements; i++){
             if(barSettings.barLabels){
-              output += `<td><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(${i}, value)" value="${barChartData[0][i]}"></td>`;
+              output += `<td><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(0, ${i}, value)" value="${barChartData[0][i]}"></td>`;
             }
             for(let j = 1; j <= numOfDataSets; j++){
-             output += `<td><input type="number" class="data-value-input" oninput="writeData(${i}, value)" value="${barChartData[j][i]}"></td>`;
+             output += `<td><input type="number" class="data-value-input" oninput="writeData(${j}, ${i}, value)" value="${barChartData[j][i]}"></td>`;
             }
             output += `</tr>`;
           }
 
           output += `<tr><th>Bar Colour:</th>`;
 
-          for(let i = 1; i <= numOfDataSets; i++){
-            output+=`<select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barColour', this.value)">` +
+          for(let i = 0; i < numOfDataSets; i++){
+            output+=`<td><select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barColour[${i}]', this.value)">` +
             `<option class="colour-choice" value="salmon">Red</option>` +
             `<option class="colour-choice" value="mediumseagreen">Green</option>` +
             `<option class="colour-choice" value="cornflowerblue">Blue</option>` +
             `<option class="colour-choice" value="gold">Yellow</option>` +
-            `</select>`;
+            `</select></td>`;
           }
+
+          output += `</tr>`;
           /*
           <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barColour', this.value)">
             <option class="colour-choice" value="salmon">Red</option>
@@ -320,8 +353,8 @@
         function writeLabel(index, value){
           barChartData[0][index] = value;
         }
-        function writeData(index, value){
-          barChartData[1][index] = value;
+        function writeData(set, index, value){
+          barChartData[set][index] = value;
         }
 
       </script>
