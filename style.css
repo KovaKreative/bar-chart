@@ -5,7 +5,6 @@ html {
 body {
   margin: 0;
   font-family: Verdana, sans-serif;
-
 }
 
 h2 {
@@ -22,6 +21,14 @@ hr {
   height: 0px;
   margin: auto;
   position: relative;
+}
+
+input[type='number']{
+  width: 80px;
+}
+
+th {
+  font-size: 14px;
 }
 
 #content {
@@ -43,7 +50,7 @@ hr {
   height: 540px;
   margin-top: 0px;
   padding-top: 20px;
-  padding-bottom: 100px;
+  padding-bottom: 160px;
   background-color: lightsteelblue;
   position: relative;
   border-radius: 0px 0px 5px 5px;
@@ -91,7 +98,7 @@ hr {
   margin-bottom: 100px;
   margin-left: auto;
   margin-right: auto;
-  width: auto;
+  width: 540px;
   display: table;
   place-content: center;
 }
