@@ -109,7 +109,7 @@
 
         let barSettings = {
           valuePosition: valuePositions[2],
-          barColour: ["salmon"],
+          barColour: ["bar-colour-red", "bar-colour-green", "bar-colour-blue", "bar-colour-yellow"],
           labelColour: "maroon",
           titleColour: "pink",
           titleSize: 20,
@@ -212,9 +212,8 @@
                 const barLocation = (startLocation + barArea * i).toString();
                 const labelPositionY = size[1] + 30;
 
-                const borderRadius = s == numOfDataSets ? "border-radius: 10px 10px 0 0" : "";
-
-                output += `<div class="bar" style="height: ${normalizedHeight}px; margin-left: ${barLocation}px; bottom: ${bottomOffset + additionalVerticalOffset}px;` +
+                const borderRadius = s == numOfDataSets ? "border-radius: 10px 10px 0 0; border-top-width: 3px" : "";
+                output += `<div class="bar ${options.barColour[s-1]}" style="height: ${normalizedHeight}px; margin-left: ${barLocation}px; bottom: ${bottomOffset + additionalVerticalOffset}px;` +
                 `${borderRadius}">`;
                 if(options.valuePosition != valuePositions[3]){
                   const fontSize = Math.min(normalizedHeight, 12);
@@ -259,15 +258,12 @@
             $(".axis-label").css("color", options.labelColour);
             $(".bar-label").width(barSize + "px");
             $(".bar").width(barSize + "px");
-            $(".bar").css("background-color", options.barColour);
             let gap = Math.floor(parseInt($("#data-scale").css("height"), 10) / (parseInt(options.numOfTicks) + 1)) - 1.5;
 
             $("#data-scale hr").css("margin-top", gap + "px");
-            //$(".bar-label").css("color", options.labelColour);
           }
           applyChartCSS();
 
-          //$("main").css("display", "initial");
           window.scrollTo(0,0);
         }
 
@@ -294,25 +290,19 @@
           output += `<tr><th>Bar Colour:</th>`;
 
           for(let i = 0; i < numOfDataSets; i++){
-            output+=`<td><select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barColour[${i}]', this.value)">` +
-            `<option class="colour-choice" value="salmon">Red</option>` +
-            `<option class="colour-choice" value="mediumseagreen">Green</option>` +
-            `<option class="colour-choice" value="cornflowerblue">Blue</option>` +
-            `<option class="colour-choice" value="gold">Yellow</option>` +
+            output+=`<td><select autocomplete="off" class="bar-colour-picker" onchange="updateBarColour(${i}, this.value); updateDataInputFields()">` +
+            `<option ` + (barSettings.barColour[i] === 'bar-colour-red' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-red">Red</option>` +
+            `<option ` + (barSettings.barColour[i] === 'bar-colour-green' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-green">Green</option>` +
+            `<option ` + (barSettings.barColour[i] === 'bar-colour-blue' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-blue">Blue</option>` +
+            `<option ` + (barSettings.barColour[i] === 'bar-colour-yellow' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-yellow">Yellow</option>` +
             `</select></td>`;
           }
 
           output += `</tr>`;
-          /*
-          <select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barColour', this.value)">
-            <option class="colour-choice" value="salmon">Red</option>
-            <option class="colour-choice" value="mediumseagreen">Green</option>
-            <option class="colour-choice" value="cornflowerblue">Blue</option>
-            <option class="colour-choice" value="gold">Yellow</option>
-          </select>
-          */
 
           $("#data-form").html(output);
+
+
         }
 
         function updateNumberOfDataSets(val){
@@ -343,11 +333,20 @@
 
           numOfElements = val;
           updateDataInputFields();
-
         };
 
         function updateChartOptions(property, value){
           barSettings[property] = value;
+        }
+
+        function updateBarColour(index, value){
+          for(let i = 0; i < barSettings.barColour.length; i++){
+            if(barSettings.barColour[i] === value){
+              barSettings.barColour[i] = barSettings.barColour[index];
+            }
+          }
+          barSettings.barColour[index] = value;
+
         }
 
         function writeLabel(index, value){
