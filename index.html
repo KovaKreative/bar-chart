@@ -18,6 +18,11 @@
         </main>
         <form id="settings-form">
           <!--This is where all the settings for the bar chart will be located-->
+          <input type="button" id="example-chart-button" onclick="generateSampleChart(1)" value="Generate Example Chart 1">
+          <input type="button" id="example-chart-button" onclick="generateSampleChart(2)" value="Generate Example Chart 2">
+          <input type="button" id="example-chart-button" onclick="generateSampleChart(3)" value="Generate Example Chart 3">
+          <br><br><hr>
+          <h2>Create your own bar chart:</h2>
           <label>Bar Chart Title:</label>
           <input autocomplete="off" type="text" maxlength="20" oninput="updateChartOptions('chartTitle', value)" value="Bar Chart">
           <br><br>
@@ -77,7 +82,6 @@
           <input autocomplete="off" type="number" maxlength="1" min="0" max="5" oninput="updateChartOptions('numOfTicks', (parseInt(value) + parseInt(value) - 1))" value="3">
           <br><br><hr><br>
           <input type="button" id="generate-chart-button" onclick="drawBarChart(barChartData, barSettings, barElement)" value="Generate Chart">
-          <input type="button" id="example-chart-button" onclick="generateSampleChart()" value="See Example Chart">
         </form>
       </div>
       <footer class="footer">

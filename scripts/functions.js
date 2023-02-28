@@ -6,10 +6,11 @@ function countMaxLabelLength(data){
       maxLabelLength = data[0][0][i].length;
     }
   }
-  if(maxLabelLength > 20){
+
+  if(maxLabelLength > 25){
     $("#bar-container").css("padding-bottom", "300px");
   } else {
-    $("#bar-container").css("padding-bottom", "160px");
+    $("#bar-container").css("padding-bottom", "200px");
   }
 }
 
@@ -25,9 +26,10 @@ function updateDataInputFields(){
   output += `<br><br><table><tr>`;
 
   output += barSettings.barLabels ? `<th>Data Label</th>` : ``;
-
-  for(let i = 1; i <= barSettings.numOfDataSets; i++){
-    output += `<th><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(1, ${i-1}, value)" value="${barChartData[0][1][i-1]}"></th>`;
+  if(barSettings.numOfDataSets > 1){
+    for(let i = 1; i <= barSettings.numOfDataSets; i++){
+      output += `<th><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(1, ${i-1}, value)" value="${barChartData[0][1][i-1]}"></th>`;
+    }
   }
 
   output += `</tr><tr>`;
@@ -194,11 +196,12 @@ function drawBarChart(data, options, element){
         const barLocation = (startLocation + barArea * i).toString();
         const labelPositionY = chartSize.height + 30;
 
-
-        const borderRadius = s == options.numOfDataSets ? "border-radius: 10px 10px 0 0; border-top-width: 3px" : "";
+        if(dataHeight < 1){
+          continue;
+        }
 
         output += `<div class="bar ${options.barColour[s-1]}" style="height: ${normalizedHeight}px; margin-left: ${barLocation}px;` +
-        `bottom: ${bottomOffset + additionalVerticalOffset}px; ${borderRadius}">`;
+        `bottom: ${bottomOffset + additionalVerticalOffset}px">`;
 
         if(options.valuePosition != valuePositions[3]){
           const fontSize = Math.min(normalizedHeight, 12);
@@ -209,7 +212,7 @@ function drawBarChart(data, options, element){
 
         output += `</div>`;
         if(options.barLabels){
-          const verticalLabels = maxLabelLength > 20 ? "bar-label-vertical" : "";
+          const verticalLabels = maxLabelLength > 25 && barArea < 150 ? "bar-label-vertical" : "";
           output += `<div class="bar-label ${verticalLabels}" style="margin-left: ${barLocation}px; top: ${labelPositionY}px">${data[0][0][i]}</div>`;
         }
 
@@ -218,9 +221,11 @@ function drawBarChart(data, options, element){
     }
     output += `<h3 id="x-axis-label" class="axis-label">${options.axisLabelX}</h3>`;
 
-    for(let i = 0; i < options.numOfDataSets; i++){
-      const leftOffset = offset + (Math.round(chartSize.width * 0.25) * i);
-      output += `<div style="display: flex; position: absolute; bottom: 40px; left: ${leftOffset}px"><div class="legend-icon ${options.barColour[i]}"></div><p style="margin: auto 0px auto 5px">${data[0][1][i]}</p></div>`;
+    if(options.numOfDataSets > 1){
+      for(let i = 0; i < options.numOfDataSets; i++){
+        const leftOffset = offset + (Math.round(chartSize.width * 0.25) * i);
+        output += `<div style="display: flex; position: absolute; bottom: 40px; left: ${leftOffset}px"><div class="legend-icon ${options.barColour[i]}"></div><p style="margin: auto 0px auto 5px">${data[0][1][i]}</p></div>`;
+      }
     }
 
     element.innerHTML = output;
@@ -259,6 +264,7 @@ function drawBarChart(data, options, element){
     let gap = Math.floor(parseInt($("#data-scale").css("height"), 10) / (parseInt(options.numOfTicks) + 1)) - 1.5;
 
     $("#data-scale hr").css("margin-top", gap + "px");
+
   }
 
   //Run all the local functions
@@ -271,8 +277,34 @@ function drawBarChart(data, options, element){
 }
 
 //This function generates a sample chart preconfigured with various settings
-function generateSampleChart(){
+function generateSampleChart(index){
 
+  //Data for chart 1
+  const animalLegsData = [
+    [
+      ["Ocelot", "Sparrow", "Tarantula", "Bumblebee"],
+      []
+    ],
+    [4, 2, 8, 6]
+  ];
+
+  const animalLegsSettings = {
+    numOfElements: 4,
+    numOfDataSets: 1,
+    valuePosition: valuePositions[0],
+    barColour: ["bar-colour-yellow", "bar-colour-red", "bar-colour-green", "bar-colour-blue"],
+    barLabelColour: "peru",
+    titleColour: "khaki",
+    titleSize: 32,
+    spacing: 70,
+    chartTitle: "Number of Animal Legs",
+    axisLabelX: "Animal Name",
+    axisLabelY: "Number of Legs",
+    axisLabelColour: "saddlebrown",
+    numOfTicks: 9,
+    barLabels: true
+  };
+  //Data for chart 2
   const dreamTheaterData = [
     [
       ["When Dream And Day Unite", "Images and Words", "Awake", "Falling Into Infinity", "Scenes From A Memory",
@@ -300,6 +332,46 @@ function generateSampleChart(){
     numOfTicks: 5,
     barLabels: true
   };
+  //Data for chart 3
+  const nutritionData = [
+    [
+      ["3% Milk", "Coca Cola", "Ensure Max Protein Drink", "Vita Coconut Water", "Tim Hortons Ice Cap"],
+      ["Carbs", "Fat", "Protein"]
+    ],
+    [12, 27.4, 4.5, 11.4, 32.3],
+    [8, 0, 1.1, 0, 5.1],
+    [9, 0, 22.7, 0, 4.4]
+  ];
 
-  drawBarChart(dreamTheaterData, dreamTheaterSettings, barElement);
+  const nutritionSettings = {
+    numOfElements: 5,
+    numOfDataSets: 3,
+    valuePosition: valuePositions[4],
+    barColour: ["bar-colour-green", "bar-colour-blue", "bar-colour-yellow", "bar-colour-red"],
+    barLabelColour: "darkslategray",
+    titleColour: "palegreen",
+    titleSize: 30,
+    spacing: 70,
+    chartTitle: "Nutritional Ratio Of Beverages",
+    axisLabelX: "Beverage",
+    axisLabelY: "Grams Per 250ml",
+    axisLabelColour: "darkslategray",
+    numOfTicks: 1,
+    barLabels: true
+  };
+
+  switch(index){
+    case 1:
+      drawBarChart(animalLegsData, animalLegsSettings, barElement);
+      break;
+    case 2:
+      drawBarChart(dreamTheaterData, dreamTheaterSettings, barElement);
+      break;
+    case 3:
+      drawBarChart(nutritionData, nutritionSettings, barElement);
+      break;
+    default:
+      drawBarChart(dreamTheaterData, dreamTheaterSettings, barElement);
+  }
+
 }

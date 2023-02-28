@@ -126,9 +126,11 @@ th {
 }
 
 .bar-label-vertical {
+  display: table-cell;
+  vertical-align: middle;
   writing-mode: sideways-lr;
   text-orientation:sideways;
-  text-align: left;
+  text-align: center;
   font-size: 12px;
   height: 160px;
 }
