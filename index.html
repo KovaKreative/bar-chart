@@ -5,7 +5,6 @@
       <title>Kova Bar Chart</title>
       <link rel="stylesheet" href="style.css">
       <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-      <script src="functions.js"></script>
     </head>
     <body>
 
@@ -77,336 +76,30 @@
           <label>Subdivisions:</label>
           <input autocomplete="off" type="number" maxlength="1" min="0" max="5" oninput="updateChartOptions('numOfTicks', (parseInt(value) + parseInt(value) - 1))" value="3">
           <br><br><hr><br>
-          <input type="button" id="generate-chart-button" value="Generate Chart">
-          <input type="button" id="example-chart-button" value="See Example Chart">
+          <input type="button" id="generate-chart-button" onclick="drawBarChart(barChartData, barSettings, barElement)" value="Generate Chart">
+          <input type="button" id="example-chart-button" onclick="generateSampleChart()" value="See Example Chart">
         </form>
       </div>
       <footer class="footer">
         Created by Eric (Valeriy) Kovalevskyy in February of 2023 for Lighthouse Labs Prep Module.
       </footer>
 
+      <script type="text/javascript" src="scripts/global-variables.js"></script>
+      <script type="text/javascript" src="scripts/functions.js"></script>
       <script type="text/javascript">
-
-        $("#generate-chart-button").click(function(){
-          $("main").css("display", "initial");
-          drawBarChart(barChartData, barSettings, barElement);
+        //Prevent form from submitting when user pushes ENTER upon filling in an input field
+        $(document).ready(function() {
+          $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+              event.preventDefault();
+              return false;
+            }
+          });
         });
 
-        $("#example-chart-button").click(function(){
-
-          const dreamTheaterData = [
-            [
-              ["When Dream And Day Unite", "Images and Words", "Awake", "Falling Into Infinity", "Scenes From A Memory",
-                "Six Degrees Of Inner Turbulence", "Train of Thought", "Octavarium", "Systematic Chaos", "Black Clouds and Silver Linings",
-                "A Dramatic Turn Of Events", "Dream Theater", "The Astonishing", "Distance Over Time", "A View From The Top Of The World"],
-              ["Longest Track", "Shortest Track"]
-            ],
-            [8, 11.5, 11, 13.1, 12.5, 13.9, 14.3, 24, 16.6, 19.3, 12.4, 22.3, 7.7, 9.3, 20.4],
-            [4.3, 2.5, 3.8, 4.3, 1, 2.1, 3, 2.5, 5.6, 5.4, 3.9, 2.7, 0.5, 4, 6.4]
-          ];
-
-          const dreamTheaterSettings = {
-            numOfElements: 15,
-            numOfDataSets: 2,
-            valuePosition: valuePositions[1],
-            barColour: ["bar-colour-blue", "bar-colour-yellow", "bar-colour-red", "bar-colour-green"],
-            barLabelColour: "navy",
-            titleColour: "lightskyblue",
-            titleSize: 30,
-            spacing: 70,
-            chartTitle: "Dream Theater's Longest and Shortest Songs",
-            axisLabelX: "Album Name",
-            axisLabelY: "Song Length In Minutes",
-            axisLabelColour: "navy",
-            numOfTicks: 5,
-            barLabels: true
-          };
-
-          $("main").css("display", "initial");
-          drawBarChart(dreamTheaterData, dreamTheaterSettings, barElement);
-        });
-
-        let chartDisplay = false;
-        $("main").css("display", "none");
-
-        let barChartData = [[["Data", "Data", "Data"],["Data Set 1","Data Set 2"]], [33, 50, 80],[33, 50, 80]];
-
-        let maxLabelLength = 0;
-
-        function countMaxLabelLength(data){
-          maxLabelLength = 0;
-          for(let i = 0; i < data[0][0].length; i++){
-            if(data[0][0][i].length > maxLabelLength){
-              maxLabelLength = data[0][0][i].length;
-            }
-          }
-          if(maxLabelLength > 20){
-            $("#bar-container").css("padding-bottom", "300px");
-          } else {
-            $("#bar-container").css("padding-bottom", "160px");
-          }
-        }
-
-
-        const valuePositions = ["bar-value-bottom", "bar-value-middle", "bar-value-top", "none"];
-
-        let labelColour = "white";
-
-        let barSettings = {
-          numOfElements: 3,
-          numOfDataSets: 1,
-          valuePosition: valuePositions[2],
-          barColour: ["bar-colour-red", "bar-colour-green", "bar-colour-blue", "bar-colour-yellow"],
-          barLabelColour: "maroon",
-          titleColour: "pink",
-          titleSize: 30,
-          spacing: 50,
-          chartTitle: "Bar Chart",
-          axisLabelX: "X Axis",
-          axisLabelY: "Y Axis",
-          axisLabelColour: "maroon",
-          numOfTicks: 3,
-          barLabels: true
-        }
-
-        const barElement = document.getElementById("bar-container");
-
-        function drawBarChart(data, options, element){
-
-          countMaxLabelLength(data);
-
-          const size = []; //Get size of the container to determine the size of the bars
-
-          const offset = 100;
-          size[0] = $("#bar-container").width() - offset - 20;
-          size[1] = $("#bar-container").height();
-
-          const bottomOffset = parseInt($("#bar-container").css("padding-bottom"), 10);
-          const spacing = 1 - Math.floor(options.spacing) * 0.01;
-          const barArea = Math.floor(size[0] / options.numOfElements);
-          const spaceSize = Math.floor(barArea * spacing);
-          const barSize = barArea - spaceSize;
-
-          const startLocation = offset + barSize * spacing;
-          //const maxPercentage = 100 - (bottomOffset / size[1] * 100); //Maximum percentage of bar size relative to the container size
-
-          let lowestDataNum = 0;
-          let highestDataNum = 0;
-
-          function getRange(){ //go through data to determine range
-            for(let d = 0; d < options.numOfElements; d++){
-              let sumOfEntries = 0;
-              for(let s = 1; s <= options.numOfDataSets; s++){
-                let entry = parseFloat(data[s][d]);
-                if(isNaN(entry)){
-                  data[s][d] = 0;
-                } else {
-                  sumOfEntries += entry;
-                }
-                if(d == 0){ //The lowest data value needs to be at least as big as the first entry
-                  lowestDataNum = sumOfEntries;
-                }
-              }
-              if(sumOfEntries < lowestDataNum){
-                lowestDataNum = sumOfEntries;
-              }
-              if(sumOfEntries > highestDataNum){
-                highestDataNum = sumOfEntries;
-              }
-            }
-            lowestDataNum = Math.floor(lowestDataNum);
-            highestDataNum = Math.ceil(highestDataNum);
-          }
-          getRange();
-
-          function createChartHTML(){
-            //update title
-            $("#chart-title").html(options.chartTitle);
-
-            //Separating output into multiple strings on separate linesfor readability
-            let output = `<h3 id="y-axis-label" class="axis-label">${options.axisLabelY}</h3>` +
-            `<h4 class="scale-number" style="top: 0 margin-top: 10px">${highestDataNum}</h4>` +
-            `<h4 class="scale-number" style="top: 280px">${highestDataNum * 0.5}</h4>` +
-            `<h4 class="scale-number" style="top: 540px">0</h4>` +
-            `<div id="data-scale">`;
-
-            for(let i = 0; i < options.numOfTicks; i++){
-              output += `<hr>`;
-            }
-
-            output += `</div>`;
-
-            for(let i = 0; i < options.numOfElements; i++){
-              let additionalVerticalOffset = 0;
-              for(let s = 1; s <= options.numOfDataSets; s++){
-                //const dataPercentage = data[s][i] / highestDataNum * maxPercentage;
-                const dataHeight = (data[s][i] / highestDataNum) * size[1];
-                const verticalAdjustment = parseInt($(".bar").css("border-top-width"), 10);
-                const normalizedHeight = dataHeight - verticalAdjustment;
-                const barLocation = (startLocation + barArea * i).toString();
-                const labelPositionY = size[1] + 30;
-
-
-                const borderRadius = s == options.numOfDataSets ? "border-radius: 10px 10px 0 0; border-top-width: 3px" : "";
-                output += `<div class="bar ${options.barColour[s-1]}" style="height: ${normalizedHeight}px; margin-left: ${barLocation}px; bottom: ${bottomOffset + additionalVerticalOffset}px;` +
-                `${borderRadius}">`;
-                if(options.valuePosition != valuePositions[3]){
-                  const fontSize = Math.min(normalizedHeight, 12);
-                  output += `<p class="bar-value ${options.valuePosition}" style="font-size: ${fontSize}px">${data[s][i]}</p>`;
-                }
-
-                output += `</div>`;
-                if(options.barLabels){
-                  const verticalLabels = maxLabelLength > 20 ? "bar-label-vertical" : "";
-                  output += `<div class="bar-label ${verticalLabels}" style="margin-left: ${barLocation}px; top: ${labelPositionY}px">${data[0][0][i]}</div>`;
-                }
-
-                additionalVerticalOffset += dataHeight - 1;
-              }
-            }
-            output += `<h3 id="x-axis-label" class="axis-label">${options.axisLabelX}</h3>`;
-
-            for(let i = 0; i < options.numOfDataSets; i++){
-              const leftOffset = offset + (Math.round(size[0] * 0.25) * i);
-              output += `<div style="display: flex; position: absolute; bottom: 40px; left: ${leftOffset}px"><div class="legend-icon ${options.barColour[i]}"></div><p style="margin: auto 0px auto 5px">${data[0][1][i]}</p></div>`;
-            }
-
-            element.innerHTML = output;
-          }
-          createChartHTML();
-
-          function applyChartCSS(){
-            $("#chart-title").css("color", options.titleColour);
-            let titleBackgroundColour;
-            switch(options.titleColour){
-              case "pink":
-                titleBackgroundColour = "maroon";
-                break;
-              case "palegreen":
-                titleBackgroundColour = "darkslategray";
-                break;
-              case "lightskyblue":
-                titleBackgroundColour = "navy";
-                break;
-              case "khaki":
-                titleBackgroundColour = "saddlebrown";
-                break;
-              default:
-                titleBackgroundColour = "indigo";
-            }
-            $("#chart-title").css("background-color", titleBackgroundColour);
-            $("#chart-title").css("font-size", options.titleSize + "px");
-            $(".axis-label").css("color", options.axisLabelColour);
-            $(".bar-label").css("color", options.barLabelColour);
-            $(".bar-label").width(barSize + "px");
-            $(".bar").width(barSize + "px");
-            let gap = Math.floor(parseInt($("#data-scale").css("height"), 10) / (parseInt(options.numOfTicks) + 1)) - 1.5;
-
-            $("#data-scale hr").css("margin-top", gap + "px");
-          }
-          applyChartCSS();
-
-          window.scrollTo(0,0);
-        }
+        $("main").css("display", "none"); //Remove the chart container at the beginning, while the chart is not yet configured
 
         updateDataInputFields();
-
-        function updateDataInputFields(){
-          let output = barSettings.barLabels ? `<br><label>Data Label colour:</label>` +
-          `<select autocomplete="off" class="colour-picker" onchange="updateChartOptions('barLabelColour', this.value)">` +
-          `<option class="colour-choice" value="maroon">Red</option>` +
-          `<option class="colour-choice" value="darkslategray">Green</option>` +
-          `<option class="colour-choice" value="navy">Blue</option>` +
-          `<option class="colour-choice" value="peru">Yellow</option></select>` : `<br>`;
-
-          output += `<br><br><table><tr>`;
-
-          output += barSettings.barLabels ? `<th>Data Label</th>` : ``;
-
-          for(let i = 1; i <= barSettings.numOfDataSets; i++){
-            output += `<th><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(1, ${i-1}, value)" value="${barChartData[0][1][i-1]}"></th>`;
-          }
-
-          output += `</tr><tr>`;
-
-          for(let i = 0; i < barSettings.numOfElements; i++){
-            if(barSettings.barLabels){
-              output += `<td><input type="text" maxlength="30" class="data-label-input" oninput="writeLabel(0, ${i}, value)" value="${barChartData[0][0][i]}"></td>`;
-            }
-            for(let j = 1; j <= barSettings.numOfDataSets; j++){
-             output += `<td><input type="number" class="data-value-input" oninput="writeData(${j}, ${i}, value)" value="${barChartData[j][i]}"></td>`;
-            }
-            output += `</tr>`;
-          }
-
-          output += `<tr><th>Bar Colour:</th>`;
-
-          for(let i = 0; i < barSettings.numOfDataSets; i++){
-            output+=`<td><select autocomplete="off" class="bar-colour-picker" onchange="updateBarColour(${i}, this.value); updateDataInputFields()">` +
-            `<option ` + (barSettings.barColour[i] === 'bar-colour-red' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-red">Red</option>` +
-            `<option ` + (barSettings.barColour[i] === 'bar-colour-green' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-green">Green</option>` +
-            `<option ` + (barSettings.barColour[i] === 'bar-colour-blue' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-blue">Blue</option>` +
-            `<option ` + (barSettings.barColour[i] === 'bar-colour-yellow' ? `selected="selected"` : ``) + ` class="colour-choice" value="bar-colour-yellow">Yellow</option>` +
-            `</select></td>`;
-          }
-
-          output += `</tr></table>`;
-
-          $("#data-form").html(output);
-        }
-
-        function updateNumberOfDataSets(val){
-          barSettings.numOfDataSets = val;
-          for(let i = 1; i <= barSettings.numOfDataSets; i++){
-            if(barChartData[i] === undefined){
-              barChartData.push(new Array(barSettings.numOfElements));
-            }
-            if(barChartData[0][1][i-1] === undefined){
-              barChartData[0][1][i-1] = "Data Set " + i;
-            }
-          }
-          updateNumberOfElements(barSettings.numOfElements);
-        }
-
-        function updateNumberOfElements(val){
-          val = Math.ceil(val);
-            val = Math.max(val, 2);
-
-              for(let i = 0; i < val; i++){
-                for(let j = 1; j <= barSettings.numOfDataSets; j++){
-                  if(barChartData[j][i] === undefined){
-                    barChartData[j][i] = 0;
-                  }
-                }
-                if(barChartData[0][0][i] === undefined){
-                  barChartData[0][0][i] = "Data";
-                }
-              }
-          barSettings.numOfElements = val;
-          updateDataInputFields();
-        };
-
-        function updateChartOptions(property, value){
-          barSettings[property] = value;
-        }
-
-        function updateBarColour(index, value){
-          for(let i = 0; i < barSettings.barColour.length; i++){
-            if(barSettings.barColour[i] === value){
-              barSettings.barColour[i] = barSettings.barColour[index];
-            }
-          }
-          barSettings.barColour[index] = value;
-
-        }
-
-        function writeLabel(index, subindex, value){
-          barChartData[0][index][subindex] = value;
-          countMaxLabelLength(barChartData);
-        }
-        function writeData(set, index, value){
-          barChartData[set][index] = value;
-        }
 
       </script>
     </body>
