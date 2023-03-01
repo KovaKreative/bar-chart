@@ -11,11 +11,11 @@ Defining your chart data and settings is done through a simple HTML interface, w
 
 You can enter the data in the following form:
 
-![Bar chart form](/img/screen1.png)
+![Bar chart form](/img/screen2.png)
 
 Once you click the button to generate the chart, it will produce something that looks like this:
 
-![Bar chart example](/img/screen2.png)
+![Bar chart example](/img/screen1.png)
 
 The main function that generates the graph is the drawBarChart function, which takes in an array of Data, an object of options, and the HTML element which will contain the bar graph.
 
