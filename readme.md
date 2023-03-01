@@ -49,6 +49,9 @@ I would also like to include the option to resize your graph dynamically, which 
 
 This project was made from scratch, using HTML, CSS, JavaScript and the jQuery library using primarily educational websites and a lot of trial and error and tinkering.
 The main outside resources used for this project were:
+
 [https://www.w3schools.com](https://www.w3schools.com/)
+
 [https://developer.mozilla.org](https://developer.mozilla.org/)
+
 [https://stackoverflow.com](https://stackoverflow.com/)
